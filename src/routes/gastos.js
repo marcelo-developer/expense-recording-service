@@ -5,13 +5,17 @@ import Gasto from '../models/gasto.js';
 const router = express.Router();
 
 router.post('/lancar', async (req, res) => {
-  const { email, gastos } = req.body;
+  const { email, nome, gastos } = req.body;
 
   if (!email || !gastos) {
     return res.status(400).json({ error: 'Email e gastos são obrigatórios' });
   }
 
-  const user = await User.findOrCreate({ where: { email } }).then(([u]) => u);
+  const user = await User.findOrCreate({
+    where: { email },
+    defaults: { nome }
+  }).then(([u]) => u);
+
   const entries = gastos.split(';').filter(Boolean).map(str => {
     const [nome, valor] = str.split(':');
     return {
